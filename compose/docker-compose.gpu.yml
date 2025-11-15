@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  movie-maker-a:
+    image: ghcr.io/jjziets/ai-vibe-movie-maker:latest
+    container_name: movie-maker-a
+    restart: unless-stopped
+    env_file:
+      - ../configs/comfyui.env
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+      COMFYUI_PORT: 9090
+      WRAPPER_PORT: 9443
+    ports:
+      - "9090:9090"
+      - "9443:9443"
+    volumes:
+      - /var/lib/cryptolabs/movie-maker/data:/data
+      - /var/lib/cryptolabs/movie-maker/outputs:/outputs
+      - /var/lib/cryptolabs/movie-maker/cache:/opt/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Uncomment to utilize the second GPU
+  # movie-maker-b:
+  #   image: ghcr.io/jjziets/ai-vibe-movie-maker:latest
+  #   container_name: movie-maker-b
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ../configs/comfyui.env
+  #   environment:
+  #     CUDA_VISIBLE_DEVICES: "1"
+  #     COMFYUI_PORT: 9190
+  #     WRAPPER_PORT: 9543
+  #   ports:
+  #     - "9190:9090"
+  #     - "9543:9443"
+  #   volumes:
+  #     - /var/lib/cryptolabs/movie-maker-b/data:/data
+  #     - /var/lib/cryptolabs/movie-maker-b/outputs:/outputs
+  #     - /var/lib/cryptolabs/movie-maker/cache:/opt/.cache
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+
