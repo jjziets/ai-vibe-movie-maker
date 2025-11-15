@@ -5,7 +5,7 @@ Infrastructure-as-code for hosting CryptoLabs' AI Vibe Movie Maker experience on
 ## Goals
 - Deterministic Docker build that bundles ComfyUI, FramePack, and the FramePack Wrapper service.
 - Dual-GPU aware docker-compose definition that can pin workloads per GPU.
-- GitHub Actions pipeline that builds/pushes the image to GHCR and optionally triggers the GPU server rollout.
+- GitHub Actions pipeline that builds/pushes the image to Docker Hub (or any registry you prefer) and optionally triggers the GPU server rollout.
 - Documentation + helper scripts so the service can be embedded at `https://www.cryptolabs.co.za/ai-vibe-movie-maker/`.
 
 ## Repository Layout
@@ -30,9 +30,9 @@ The default compose file launches a single container with `CUDA_VISIBLE_DEVICES=
 
 ## Deployment Pipeline
 1. Push to `main`.
-2. GitHub Actions (`.github/workflows/build.yml`) builds the image with Buildx, tags it as `ghcr.io/jjziets/ai-vibe-movie-maker:latest`, and pushes.
+2. GitHub Actions (`.github/workflows/build.yml`) builds the image with Buildx, tags it as `${DOCKER_USERNAME}/ai-vibe-movie-maker:latest`, and pushes to Docker Hub.
 3. (Optional) The same workflow can SSH into the GPU server (41.193.204.66:101) and run `scripts/deploy.sh` to pull & restart the stack. Secrets required:
-   - `GHCR_PAT` – Personal access token allowing GHCR push/pull.
+   - `DOCKER_USERNAME` / `DOCKER_PASSWORD` – Docker Hub credentials for publishing & pulling.
    - `GPU_SSH_KEY` – Base64-encoded private key for the server.
    - `GPU_SSH_USER`, `GPU_SSH_HOST`, `GPU_SSH_PORT`.
 

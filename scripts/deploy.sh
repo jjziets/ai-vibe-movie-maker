@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE_TAG="${IMAGE_TAG:-ghcr.io/jjziets/ai-vibe-movie-maker:latest}"
+IMAGE_TAG="${IMAGE_TAG:-jjziets/ai-vibe-movie-maker:latest}"
 GPU_SSH_HOST="${GPU_SSH_HOST:-41.193.204.66}"
 GPU_SSH_PORT="${GPU_SSH_PORT:-101}"
 GPU_SSH_USER="${GPU_SSH_USER:-root}"
@@ -24,7 +24,9 @@ scp -i "${TMP_KEY}" -P "${GPU_SSH_PORT}" "${STACK_COMPOSE_FILE}" \
 ssh -i "${TMP_KEY}" -p "${GPU_SSH_PORT}" "${GPU_SSH_USER}@${GPU_SSH_HOST}" <<EOF
 set -e
 cd ${REMOTE_DIR}
-docker login ghcr.io -u ${GHCR_USER:-jjziets} -p ${GHCR_PAT:?GHCR_PAT is required}
+if [ -n "${DOCKER_USERNAME:-}" ] && [ -n "${DOCKER_PASSWORD:-}" ]; then
+  docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+fi
 docker compose --env-file ${ENV_FILE_REMOTE} pull
 docker compose --env-file ${ENV_FILE_REMOTE} up -d movie-maker-a movie-maker-b
 EOF

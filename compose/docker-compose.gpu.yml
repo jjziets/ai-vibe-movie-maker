@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   movie-maker-a:
-    image: ghcr.io/jjziets/ai-vibe-movie-maker:latest
+    image: ${DOCKER_IMAGE:-jjziets/ai-vibe-movie-maker:latest}
     container_name: movie-maker-a
     restart: unless-stopped
     env_file:
