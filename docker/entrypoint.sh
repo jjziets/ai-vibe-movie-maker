@@ -14,6 +14,11 @@ WRAPPER_HOST="${WRAPPER_HOST:-0.0.0.0}"
 COMFYUI_PORT="${COMFYUI_PORT:-9090}"
 COMFYUI_HOST="${COMFYUI_HOST:-0.0.0.0}"
 LOG_LEVEL="${WRAPPER_LOG_LEVEL:-info}"
+FRAMEPACK_MAX_CONTEXT="${FRAMEPACK_MAX_CONTEXT:-2048}"
+FRAMEPACK_TEA_CACHE="${FRAMEPACK_TEA_CACHE:-false}"
+NCCL_P2P_LEVEL="${NCCL_P2P_LEVEL:-NVL}"
+NCCL_ASYNC_ERROR_HANDLING="${NCCL_ASYNC_ERROR_HANDLING:-1}"
+NCCL_DEBUG="${NCCL_DEBUG:-WARN}"
 
 download_framepack_bundle() {
   local bundle_path="${DATA_DIR}/framepack/bundle.zip"
@@ -47,6 +52,8 @@ start_wrapper() {
       LOG_LEVEL="${LOG_LEVEL}" \
       WRAPPER_PORT="${WRAPPER_PORT}" \
       WRAPPER_HOST="${WRAPPER_HOST}" \
+      FRAMEPACK_MAX_CONTEXT="${FRAMEPACK_MAX_CONTEXT}" \
+      FRAMEPACK_TEA_CACHE="${FRAMEPACK_TEA_CACHE}" \
     python -m framepack_wrapper.app &
   WRAPPER_PID=$!
 }
@@ -59,6 +66,9 @@ start_comfyui() {
       COMFYUI_PORT="${COMFYUI_PORT}" \
       HF_HOME="${HF_HOME:-/opt/.cache/huggingface}" \
       CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" \
+      NCCL_P2P_LEVEL="${NCCL_P2P_LEVEL}" \
+      NCCL_ASYNC_ERROR_HANDLING="${NCCL_ASYNC_ERROR_HANDLING}" \
+      NCCL_DEBUG="${NCCL_DEBUG}" \
     python main.py --listen "${COMFYUI_HOST}" --port "${COMFYUI_PORT}" --enable-cors-headers
 }
 

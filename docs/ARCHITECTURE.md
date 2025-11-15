@@ -17,8 +17,8 @@
 5. Completed renders are written to `/outputs/$USER_ID/…`; WordPress UI fetches them via the wrapper API.
 
 ## GPU Layout
-- `compose/docker-compose.gpu.yml` ships two services (`movie-maker-a`, `movie-maker-b`).
-- Each service sets `CUDA_VISIBLE_DEVICES` so we can dedicate a GPU per container (GPU0/1).
+- `compose/docker-compose.gpu.yml` defaults to a single `movie-maker-a` container with `CUDA_VISIBLE_DEVICES=0,1`, allowing ComfyUI to span both 48 GB GPUs over NVLink.
+- Uncomment `movie-maker-b` if you want one container per GPU instead of a shared pool.
 - Persistent assets (checkpoints, VAEs, LORAs, FramePack bundles) mounted from `/var/lib/cryptolabs/movie-maker`.
 
 ## Security

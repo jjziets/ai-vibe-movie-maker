@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     output_dir: str = "/outputs"
     framepack_license_key: str | None = None
     wordpress_header_prefix: str = "x-webui"
+    framepack_max_context: int = 2048
+    framepack_tea_cache: bool = False
 
     class Config:
         env_prefix = ""

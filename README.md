@@ -23,9 +23,10 @@ src/framepack_wrapper/    # Placeholder FastAPI service for WP SSO
 ## Quick Start (local GPU workstation)
 ```bash
 cp configs/comfyui.env.example configs/comfyui.env
+# adjust CUDA_VISIBLE_DEVICES (0,1 for NVLink pair) inside comfyui.env
 docker compose -f compose/docker-compose.gpu.yml --env-file configs/comfyui.env up -d
 ```
-The default compose file starts one ComfyUI instance bound to GPU0. Uncomment the second service to utilize both GPUs.
+The default compose file launches a single container with `CUDA_VISIBLE_DEVICES=0,1`, so both 48 GB cards are available to FramePack through NVLink. If you prefer per‑GPU isolation, set `CUDA_VISIBLE_DEVICES=0` (or `=1`) and duplicate the service definition.
 
 ## Deployment Pipeline
 1. Push to `main`.

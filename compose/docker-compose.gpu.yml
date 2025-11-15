@@ -8,9 +8,11 @@ services:
     env_file:
       - ../configs/comfyui.env
     environment:
-      CUDA_VISIBLE_DEVICES: "0"
-      COMFYUI_PORT: 9090
-      WRAPPER_PORT: 9443
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-0,1}
+      COMFYUI_PORT: ${COMFYUI_PORT:-9090}
+      WRAPPER_PORT: ${WRAPPER_PORT:-9443}
+      NCCL_P2P_LEVEL: ${NCCL_P2P_LEVEL:-NVL}
+      NCCL_ASYNC_ERROR_HANDLING: ${NCCL_ASYNC_ERROR_HANDLING:-1}
     ports:
       - "9090:9090"
       - "9443:9443"
