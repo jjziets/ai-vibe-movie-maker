@@ -21,6 +21,9 @@ NCCL_ASYNC_ERROR_HANDLING="${NCCL_ASYNC_ERROR_HANDLING:-1}"
 NCCL_DEBUG="${NCCL_DEBUG:-WARN}"
 FRAMEPACK_PREFETCH_MODELS="${FRAMEPACK_PREFETCH_MODELS:-true}"
 
+# Ensure wrapper is importable for both root and gosu user
+export PYTHONPATH="${WRAPPER_HOME}:${PYTHONPATH:-}"
+
 download_framepack_bundle() {
   local bundle_path="${DATA_DIR}/framepack/bundle.zip"
   local stamp="${DATA_DIR}/framepack/.bundle.stamp"
@@ -118,7 +121,7 @@ start_comfyui() {
       NCCL_P2P_LEVEL="${NCCL_P2P_LEVEL}" \
       NCCL_ASYNC_ERROR_HANDLING="${NCCL_ASYNC_ERROR_HANDLING}" \
       NCCL_DEBUG="${NCCL_DEBUG}" \
-    python main.py --listen "${COMFYUI_HOST}" --port "${COMFYUI_PORT}" --enable-cors-headers
+    python main.py --listen "${COMFYUI_HOST}" --port "${COMFYUI_PORT}" --enable-cors-header
 }
 
 shutdown() {
