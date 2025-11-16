@@ -19,6 +19,7 @@ FRAMEPACK_TEA_CACHE="${FRAMEPACK_TEA_CACHE:-false}"
 NCCL_P2P_LEVEL="${NCCL_P2P_LEVEL:-NVL}"
 NCCL_ASYNC_ERROR_HANDLING="${NCCL_ASYNC_ERROR_HANDLING:-1}"
 NCCL_DEBUG="${NCCL_DEBUG:-WARN}"
+FRAMEPACK_PREFETCH_MODELS="${FRAMEPACK_PREFETCH_MODELS:-true}"
 
 download_framepack_bundle() {
   local bundle_path="${DATA_DIR}/framepack/bundle.zip"
@@ -38,6 +39,48 @@ download_framepack_bundle() {
 prepare_fs() {
   mkdir -p "${DATA_DIR}" "${OUTPUT_DIR}" "${COMFY_HOME}/models"
   chown -R "${COMFY_USER}:${COMFY_USER}" "${DATA_DIR}" "${OUTPUT_DIR}" "${COMFY_HOME}" "${WRAPPER_HOME}"
+}
+
+prefetch_models() {
+  if [[ "${FRAMEPACK_PREFETCH_MODELS}" != "true" ]]; then
+    echo "[init] Model prefetch disabled via FRAMEPACK_PREFETCH_MODELS=${FRAMEPACK_PREFETCH_MODELS}"
+    return
+  fi
+
+  local script=$(cat <<'PY'
+import os
+from huggingface_hub import snapshot_download
+
+targets = [
+    ("lllyasviel/FramePackI2V_HY", "/opt/ComfyUI/models/diffusers/lllyasviel/FramePackI2V_HY"),
+    ("lllyasviel/FramePack_F1_I2V_HY_20250503", "/opt/ComfyUI/models/diffusers/lllyasviel/FramePack_F1_I2V_HY_20250503"),
+    ("Comfy-Org/HunyuanVideo_repackaged", "/opt/ComfyUI/models/diffusers/Comfy-Org/HunyuanVideo_repackaged"),
+    ("Comfy-Org/sigclip_vision_384", "/opt/ComfyUI/models/clip_vision/sigclip_vision_384"),
+    ("Kijai/HunyuanVideo_comfy", "/opt/ComfyUI/models/diffusion_models/Kijai/HunyuanVideo_comfy"),
+]
+
+token = os.environ.get("HUGGING_FACE_HUB_TOKEN")
+
+for repo_id, dest in targets:
+    dest = dest.rstrip("/")
+    if os.path.exists(dest) and any(os.scandir(dest)):
+        print(f"[prefetch] {dest} already populated; skipping {repo_id}")
+        continue
+    os.makedirs(dest, exist_ok=True)
+    print(f"[prefetch] Downloading {repo_id} -> {dest}")
+    snapshot_download(
+        repo_id=repo_id,
+        local_dir=dest,
+        local_dir_use_symlinks=False,
+        token=token,
+    )
+PY
+)
+
+  echo "[init] Prefetching FramePack model weights (this may take a while)..."
+  gosu "${COMFY_USER}" env HF_HOME="${HF_HOME:-/opt/.cache/huggingface}" python - <<PY
+$script
+PY
 }
 
 start_wrapper() {
@@ -80,6 +123,7 @@ trap shutdown SIGINT SIGTERM
 
 prepare_fs
 download_framepack_bundle
+prefetch_models
 start_wrapper
 start_comfyui
 
