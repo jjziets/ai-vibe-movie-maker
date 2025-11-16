@@ -132,7 +132,9 @@ trap shutdown SIGINT SIGTERM
 
 prepare_fs
 download_framepack_bundle
-prefetch_models
+
+# Start services immediately, prefetch in background
 start_wrapper
+(prefetch_models &)
 start_comfyui
 
