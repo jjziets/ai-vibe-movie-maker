@@ -124,9 +124,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
         payload_bytes = payload.encode("utf-8")
         logger.info(
-            "SSO payload debug len=%s head=%s",
+            "SSO payload debug len=%s head=%s tail=%s",
             len(payload_bytes),
-            payload_bytes[:48].hex(),
+            payload_bytes[:32].hex(),
+            payload_bytes[-8:].hex(),
         )
 
         expected_sig = hmac.new(
