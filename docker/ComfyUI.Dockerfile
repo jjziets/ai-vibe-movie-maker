@@ -38,12 +38,22 @@ RUN git clone --depth=1 --branch ${COMFYUI_REF} ${COMFYUI_REPO} ${COMFY_HOME}
 RUN python3 -m venv ${VIRTUAL_ENV} && \
     pip install --upgrade pip setuptools wheel && \
     pip install -r ${COMFY_HOME}/requirements.txt && \
-    pip install fastapi uvicorn[standard] httpx pydantic-settings python-multipart
+    pip install fastapi uvicorn[standard] httpx pydantic-settings python-multipart huggingface_hub
+
+# Install required custom nodes (FramePack wrapper + dependencies)
+RUN mkdir -p ${COMFY_HOME}/custom_nodes && \
+    git clone --depth=1 https://github.com/kijai/ComfyUI-FramePackWrapper ${COMFY_HOME}/custom_nodes/ComfyUI-FramePackWrapper && \
+    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-FramePackWrapper/requirements.txt && \
+    git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Pack ${COMFY_HOME}/custom_nodes/ComfyUI-Impact-Pack && \
+    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-Impact-Pack/requirements.txt && \
+    git clone --depth=1 https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite && \
+    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt
 
 # Copy wrapper source
 COPY src/framepack_wrapper ${WRAPPER_HOME}
 
-# Entrypoint assets
+# Example workflows / entrpoint assets
+COPY comfyui_workflows/ ${COMFY_HOME}/user/default/workflows/
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
