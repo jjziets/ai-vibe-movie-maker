@@ -127,7 +127,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         ).hexdigest()
 
         if not hmac.compare_digest(sig, expected_sig):
-            logger.warning("Invalid SSO signature from %s", request.client.host)
+            logger.warning(
+                "Invalid SSO signature from %s - expected=%s got=%s payload=%s",
+                request.client.host, expected_sig[:16], sig[:16], payload[:50]
+            )
             raise HTTPException(status_code=401, detail="Invalid signature")
 
         # Decode payload
