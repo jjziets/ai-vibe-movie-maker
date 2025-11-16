@@ -96,7 +96,7 @@ start_wrapper() {
   echo "[init] Starting FramePack wrapper on ${WRAPPER_HOST}:${WRAPPER_PORT}"
   gosu "${COMFY_USER}" \
     env \
-      PYTHONPATH="${PYTHONPATH}" \
+      PYTHONPATH="/opt/framepack_wrapper:/opt:${PYTHONPATH:-}" \
       COMFYUI_URL="http://127.0.0.1:${COMFYUI_PORT}" \
       PUBLIC_BASE_URL="${PUBLIC_BASE_URL}" \
       FRAMEPACK_LICENSE_KEY="${FRAMEPACK_LICENSE_KEY}" \
