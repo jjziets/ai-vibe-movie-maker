@@ -120,6 +120,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             logger.error("WP_SSO_SHARED_SECRET not configured")
             raise HTTPException(status_code=500, detail="SSO not configured")
 
+        logger.info("Using WP SSO secret prefix: %s", config.wp_sso_shared_secret[:8])
+
         expected_sig = hmac.new(
             secret.encode('utf-8'),
             payload.encode('utf-8'),
