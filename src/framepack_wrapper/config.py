@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     wordpress_header_prefix: str = "x-webui"
     framepack_max_context: int = 2048
     framepack_tea_cache: bool = False
+    wp_sso_shared_secret: str = ""
 
     class Config:
         env_prefix = ""
