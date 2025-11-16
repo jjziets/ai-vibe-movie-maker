@@ -122,17 +122,32 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
         logger.info("Using WP SSO secret prefix: %s", config.wp_sso_shared_secret[:8])
 
-        payload_bytes = payload.encode("utf-8")
+        raw_payload = payload
+        raw_bytes = raw_payload.encode("utf-8")
+        pad_len = (-len(raw_payload)) % 4
+        padded_payload = raw_payload + ("=" * pad_len)
+
+        try:
+            decoded_payload_bytes = base64.b64decode(padded_payload)
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Failed to decode SSO payload (pre-verify): %s", exc)
+            raise HTTPException(status_code=400, detail="Invalid payload") from exc
+
+        canonical_payload = base64.b64encode(decoded_payload_bytes).decode("utf-8")
+        canonical_bytes = canonical_payload.encode("utf-8")
+
         logger.info(
-            "SSO payload debug len=%s head=%s tail=%s",
-            len(payload_bytes),
-            payload_bytes[:32].hex(),
-            payload_bytes[-8:].hex(),
+            "SSO payload debug raw_len=%s canon_len=%s pad=%s head=%s tail=%s",
+            len(raw_bytes),
+            len(canonical_bytes),
+            pad_len,
+            canonical_bytes[:32].hex(),
+            canonical_bytes[-8:].hex(),
         )
 
         expected_sig = hmac.new(
             secret.encode('utf-8'),
-            payload_bytes,
+            canonical_bytes,
             hashlib.sha256
         ).hexdigest()
         logger.info(
@@ -148,12 +163,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
             raise HTTPException(status_code=401, detail="Invalid signature")
 
-        # Decode payload
+        # Decode payload (already canonicalized)
         try:
-            payload_json = base64.b64decode(payload).decode('utf-8')
+            payload_json = decoded_payload_bytes.decode('utf-8')
             data = json.loads(payload_json)
         except Exception as e:
-            logger.error("Failed to decode SSO payload: %s", e)
+            logger.error("Failed to decode SSO payload JSON: %s", e)
             raise HTTPException(status_code=400, detail="Invalid payload")
 
         # Validate timestamp (5 minute window)
