@@ -37,8 +37,14 @@ download_framepack_bundle() {
 }
 
 prepare_fs() {
-  mkdir -p "${DATA_DIR}" "${OUTPUT_DIR}" "${COMFY_HOME}/models"
-  chown -R "${COMFY_USER}:${COMFY_USER}" "${DATA_DIR}" "${OUTPUT_DIR}" "${COMFY_HOME}" "${WRAPPER_HOME}"
+  local hf_dir="${HF_HOME:-/opt/.cache/huggingface}"
+  mkdir -p "${DATA_DIR}" "${OUTPUT_DIR}" "${COMFY_HOME}/models" "${hf_dir}"
+  chown -R "${COMFY_USER}:${COMFY_USER}" \
+    "${DATA_DIR}" \
+    "${OUTPUT_DIR}" \
+    "${COMFY_HOME}" \
+    "${WRAPPER_HOME}" \
+    "${hf_dir}"
 }
 
 prefetch_models() {
