@@ -122,11 +122,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
         logger.info("Using WP SSO secret prefix: %s", config.wp_sso_shared_secret[:8])
 
+        payload_bytes = payload.encode("utf-8")
+        logger.info(
+            "SSO payload debug len=%s head=%s",
+            len(payload_bytes),
+            payload_bytes[:48].hex(),
+        )
+
         expected_sig = hmac.new(
             secret.encode('utf-8'),
-            payload.encode('utf-8'),
+            payload_bytes,
             hashlib.sha256
         ).hexdigest()
+        logger.info(
+            "SSO signature debug sig=%s expected=%s",
+            sig[:32],
+            expected_sig[:32],
+        )
 
         if not hmac.compare_digest(sig, expected_sig):
             logger.warning(
