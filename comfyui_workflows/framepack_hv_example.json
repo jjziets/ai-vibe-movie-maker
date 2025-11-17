@@ -949,7 +949,7 @@
         "Node name for S&R": "CLIPVisionLoader"
       },
       "widgets_values": [
-        "sigclip_vision_patch14_384.safetensors"
+        "sigclip_vision_384/sigclip_vision_patch14_384.safetensors"
       ],
       "color": "#2a363b",
       "bgcolor": "#3f5159"
