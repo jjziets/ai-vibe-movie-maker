@@ -41,13 +41,40 @@ download_framepack_bundle() {
 
 prepare_fs() {
   local hf_dir="${HF_HOME:-/opt/.cache/huggingface}"
-  mkdir -p "${DATA_DIR}" "${OUTPUT_DIR}" "${COMFY_HOME}/models" "${hf_dir}"
+  mkdir -p "${DATA_DIR}" "${OUTPUT_DIR}" "${OUTPUT_DIR}/temp" "${COMFY_HOME}/models" "${hf_dir}"
   chown -R "${COMFY_USER}:${COMFY_USER}" \
     "${DATA_DIR}" \
     "${OUTPUT_DIR}" \
     "${COMFY_HOME}" \
     "${WRAPPER_HOME}" \
     "${hf_dir}"
+}
+
+link_comfy_output_dirs() {
+  local comfy_output="${COMFY_HOME}/output"
+  local comfy_temp="${COMFY_HOME}/temp"
+  local target_output="${OUTPUT_DIR}"
+  local target_temp="${OUTPUT_DIR}/temp"
+
+  mkdir -p "${target_output}" "${target_temp}"
+
+  if [[ -d "${comfy_output}" && ! -L "${comfy_output}" ]]; then
+    if [[ -n "$(ls -A "${comfy_output}" 2>/dev/null)" ]]; then
+      cp -a "${comfy_output}/." "${target_output}/"
+    fi
+    rm -rf "${comfy_output}"
+  fi
+
+  if [[ -d "${comfy_temp}" && ! -L "${comfy_temp}" ]]; then
+    if [[ -n "$(ls -A "${comfy_temp}" 2>/dev/null)" ]]; then
+      cp -a "${comfy_temp}/." "${target_temp}/"
+    fi
+    rm -rf "${comfy_temp}"
+  fi
+
+  ln -sfn "${target_output}" "${comfy_output}"
+  ln -sfn "${target_temp}" "${comfy_temp}"
+  chown -h "${COMFY_USER}:${COMFY_USER}" "${comfy_output}" "${comfy_temp}"
 }
 
 prefetch_models() {
@@ -134,6 +161,7 @@ shutdown() {
 trap shutdown SIGINT SIGTERM
 
 prepare_fs
+link_comfy_output_dirs
 download_framepack_bundle
 
 # Start services immediately, prefetch in background
