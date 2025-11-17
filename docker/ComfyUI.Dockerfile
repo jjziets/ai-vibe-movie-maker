@@ -47,7 +47,9 @@ RUN mkdir -p ${COMFY_HOME}/custom_nodes && \
     git clone --depth=1 https://github.com/ltdrdata/ComfyUI-Impact-Pack ${COMFY_HOME}/custom_nodes/ComfyUI-Impact-Pack && \
     pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-Impact-Pack/requirements.txt && \
     git clone --depth=1 https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite && \
-    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt
+    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt && \
+    git clone --depth=1 https://github.com/Comfy-Org/ComfyUI-Manager ${COMFY_HOME}/custom_nodes/comfyui-manager && \
+    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/comfyui-manager/requirements.txt
 
 # Copy wrapper source
 COPY src/framepack_wrapper ${WRAPPER_HOME}

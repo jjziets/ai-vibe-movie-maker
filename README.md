@@ -28,6 +28,11 @@ docker compose -f compose/docker-compose.gpu.yml --env-file configs/comfyui.env 
 ```
 The default compose file launches a single container with `CUDA_VISIBLE_DEVICES=0,1`, so both 48 GB cards are available to FramePack through NVLink. If you prefer per‑GPU isolation, set `CUDA_VISIBLE_DEVICES=0` (or `=1`) and duplicate the service definition.
 
+## Bundled Custom Nodes & Manager
+- `ComfyUI-FramePackWrapper` – all FramePack nodes plus the helper workflow shipped in `comfyui_workflows/`.
+- `ComfyUI-Impact-Pack` + `ComfyUI-VideoHelperSuite` – utility nodes such as `GetNode`, `SetNode`, `ImageResize+`, `GetImageSizeAndCount`, and video assembly helpers.
+- `ComfyUI-Manager` – preinstalled under `custom_nodes/comfyui-manager` so you can click **Manager → Install Missing Custom Nodes** inside the UI to automatically pull any other nodes referenced by workflows.
+
 ## Deployment Pipeline
 1. Push to `main`.
 2. GitHub Actions (`.github/workflows/build.yml`) builds the image with Buildx, tags it as `${DOCKER_USERNAME}/ai-vibe-movie-maker:latest`, and pushes to Docker Hub.

@@ -4,6 +4,7 @@
 | Component | Description |
 |-----------|-------------|
 | **ComfyUI** | Base node editor + execution engine. Runs inside the Docker container with CUDA 12.1 drivers. |
+| **ComfyUI-Manager** | Ships inside `custom_nodes/comfyui-manager` so operators can click **Manager → Install Missing Custom Nodes** to pull any workflow dependencies (e.g., `GetNode`, `ImageResize+`). |
 | **FramePack** | Workflow + asset bundle providing the Movie Maker capabilities (video prompt composer, storyboard loops, etc.). Installed into `ComfyUI/custom_nodes/framepack`. |
 | **FramePack Wrapper** | Lightweight FastAPI application that lives in the same container, handles WordPress SSO headers, routes user preset selections to ComfyUI, and exposes health/readiness probes. |
 | **Nginx (GPU host)** | Terminates TLS for `framepack.ai.cryptolabs.co.za`, calls WordPress `auth_request`, and forwards traffic to the container. |
