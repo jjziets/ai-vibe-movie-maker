@@ -122,12 +122,14 @@ start_comfyui() {
       NCCL_P2P_LEVEL="${NCCL_P2P_LEVEL}" \
       NCCL_ASYNC_ERROR_HANDLING="${NCCL_ASYNC_ERROR_HANDLING}" \
       NCCL_DEBUG="${NCCL_DEBUG}" \
-    python main.py --listen "${COMFYUI_HOST}" --port "${COMFYUI_PORT}" --enable-cors-header
+    python main.py --listen "${COMFYUI_HOST}" --port "${COMFYUI_PORT}" --enable-cors-header &
+  COMFYUI_PID=$!
 }
 
 shutdown() {
   echo "[init] Caught signal, shutting down..."
   [[ -n "${WRAPPER_PID:-}" ]] && kill "${WRAPPER_PID}" >/dev/null 2>&1 || true
+  [[ -n "${COMFYUI_PID:-}" ]] && kill "${COMFYUI_PID}" >/dev/null 2>&1 || true
 }
 trap shutdown SIGINT SIGTERM
 
@@ -136,6 +138,9 @@ download_framepack_bundle
 
 # Start services immediately, prefetch in background
 start_wrapper
-(prefetch_models &)
 start_comfyui
+(prefetch_models &)
+
+# Keep container alive and wait for children
+wait
 
