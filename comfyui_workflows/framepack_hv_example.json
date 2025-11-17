@@ -369,7 +369,7 @@
         "Node name for S&R": "VAELoader"
       },
       "widgets_values": [
-        "hyvid\\hunyuan_video_vae_bf16_repack.safetensors"
+        "hyvid/hunyuan_video_vae_bf16_repack.safetensors"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -1186,7 +1186,7 @@
             "format": "video/h264-mp4",
             "frame_rate": 30,
             "workflow": "FramePack_00001.png",
-            "fullpath": "N:\\AI\\ComfyUI\\temp\\FramePack_00001.mp4"
+            "fullpath": "/outputs/FramePack_00001.mp4"
           }
         }
       }
@@ -1331,7 +1331,7 @@
         "Node name for S&R": "LoadFramePackModel"
       },
       "widgets_values": [
-        "Hyvid\\FramePackI2V_HY_fp8_e4m3fn.safetensors",
+        "Hyvid/FramePackI2V_HY_fp8_e4m3fn.safetensors",
         "bf16",
         "fp8_e4m3fn",
         "offload_device",
