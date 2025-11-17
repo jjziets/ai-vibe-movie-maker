@@ -38,7 +38,8 @@ RUN git clone --depth=1 --branch ${COMFYUI_REF} ${COMFYUI_REPO} ${COMFY_HOME}
 RUN python3 -m venv ${VIRTUAL_ENV} && \
     pip install --upgrade pip setuptools wheel && \
     pip install -r ${COMFY_HOME}/requirements.txt && \
-    pip install fastapi uvicorn[standard] httpx pydantic-settings python-multipart huggingface_hub
+    pip install fastapi uvicorn[standard] httpx pydantic-settings python-multipart huggingface_hub && \
+    chown -R ${COMFY_USER}:${COMFY_USER} ${VIRTUAL_ENV}
 
 # Install required custom nodes (FramePack wrapper + dependencies)
 RUN mkdir -p ${COMFY_HOME}/custom_nodes && \
@@ -49,7 +50,8 @@ RUN mkdir -p ${COMFY_HOME}/custom_nodes && \
     git clone --depth=1 https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite && \
     pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt && \
     git clone --depth=1 https://github.com/Comfy-Org/ComfyUI-Manager ${COMFY_HOME}/custom_nodes/comfyui-manager && \
-    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/comfyui-manager/requirements.txt
+    pip install --no-cache-dir -r ${COMFY_HOME}/custom_nodes/comfyui-manager/requirements.txt && \
+    chown -R ${COMFY_USER}:${COMFY_USER} ${VIRTUAL_ENV}
 
 # Copy wrapper source
 COPY src/framepack_wrapper ${WRAPPER_HOME}
